@@ -292,13 +292,75 @@ function renderCountriesChart(data) {
   const counts = countFlat(data, "countries");
   delete counts["Unknown"];
   const top = topN(counts, 10);
-  const labels = top.map(e=>e[0]);
-  const values = top.map(e=>e[1]);
+  const labels = top.map(e => e[0]);
+  const values = top.map(e => e[1]);
+
+  const isDark = document.documentElement.classList.contains("dark");
+  const gridColor = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
+  const tickColor = isDark ? NF_GRAY : "#555";
 
   charts.countries = new Chart(document.getElementById("chart-countries").getContext("2d"), {
-    type: "bar",
-    data: { labels, datasets: [{ data: values, backgroundColor: PALETTE, borderRadius: 5, borderSkipped: false }] },
-    options: baseOpts({ indexAxis: "y", scales: { x: { ...baseOpts().scales.x }, y: { grid:{display:false}, ticks:{color:NF_GRAY,font:{size:11}} } } }),
+    type: "polarArea",
+    data: {
+      labels,
+      datasets: [{
+        data            : values,
+        backgroundColor : PALETTE.map(c => c + "cc"),  // 80% opacity fill
+        borderColor     : PALETTE,
+        borderWidth     : 1.5,
+        hoverBackgroundColor: PALETTE,
+      }],
+    },
+    options: {
+      responsive         : true,
+      maintainAspectRatio: false,
+      animation          : { duration: 450, easing: "easeInOutQuart" },
+      scales: {
+        r: {
+          ticks       : { display: false },           // hide radial numbers — too cluttered
+          grid        : { color: gridColor },
+          angleLines  : { color: gridColor },
+          pointLabels : { display: false },
+        },
+      },
+      plugins: {
+        legend: {
+          display  : true,
+          position : "right",
+          labels   : {
+            color      : isDark ? NF_TEXT : "#1a1a1a",
+            font       : { size: 11 },
+            padding    : 10,
+            boxWidth   : 12,
+            boxHeight  : 12,
+            borderRadius: 3,
+            // Append count to each label for quick reading
+            generateLabels: chart => {
+              const ds = chart.data.datasets[0];
+              return chart.data.labels.map((lbl, i) => ({
+                text        : `${lbl} (${ds.data[i].toLocaleString()})`,
+                fillStyle   : ds.backgroundColor[i],
+                strokeStyle : ds.borderColor[i],
+                lineWidth   : 1,
+                index       : i,
+              }));
+            },
+          },
+        },
+        tooltip: {
+          backgroundColor : isDark ? "#1a1a1a" : "#fff",
+          titleColor      : isDark ? NF_TEXT   : "#141414",
+          bodyColor       : isDark ? "#c0c0c0" : "#555",
+          borderColor     : isDark ? "#3a3a3a" : "#e0e0e0",
+          borderWidth     : 1,
+          padding         : 10,
+          cornerRadius    : 6,
+          callbacks       : {
+            label: ctx => ` ${ctx.label}: ${ctx.raw.toLocaleString()} titles`,
+          },
+        },
+      },
+    },
   });
 }
 

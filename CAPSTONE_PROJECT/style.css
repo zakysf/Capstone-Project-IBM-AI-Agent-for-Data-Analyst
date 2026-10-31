@@ -111,9 +111,11 @@ input.nf-select   { background-image: none; }
 }
 
 /* ── Chart wrappers ── */
-.chart-wrap       { position: relative; height: 280px; }
-.chart-wrap--sm   { height: 220px; }
-.chart-wrap--lg   { height: 340px; }
+.chart-wrap        { position: relative; height: 280px; }
+.chart-wrap--sm    { height: 220px; }
+.chart-wrap--lg    { height: 340px; }
+/* Polar Area needs extra height to accommodate the right-side legend */
+.chart-wrap--polar { height: 380px; }
 
 /* ── Insight card ── */
 .insight-card {
@@ -178,4 +180,5 @@ td:first-child { color: #e5e5e5; font-weight: 500; max-width: 260px; white-space
   .kpi-value { font-size: 1.4rem; }
   .chart-wrap { height: 220px; }
   .chart-wrap--lg { height: 280px; }
+  .chart-wrap--polar { height: 320px; }
 }
