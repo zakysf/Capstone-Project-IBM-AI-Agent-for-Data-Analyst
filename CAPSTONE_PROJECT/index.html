@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Netflix Catalogue Analytics Dashboard</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            netflix: { red: '#E50914', dark: '#141414', card: '#1f1f1f', border: '#2a2a2a', muted: '#808080' }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="bg-netflix-dark text-gray-100 min-h-screen">
+
+  <!-- ===== HEADER ===== -->
+  <header class="bg-black border-b border-netflix-border sticky top-0 z-50">
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <!-- Netflix-style "N" mark -->
+        <div class="w-9 h-9 rounded bg-netflix-red flex items-center justify-center shrink-0">
+          <span class="font-black text-white text-lg leading-none">N</span>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white leading-tight tracking-tight">Netflix Catalogue Analytics</h1>
+          <p class="text-xs text-netflix-muted">Content Strategy · Capstone Project</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- Record counter -->
+        <span id="record-count" class="text-xs bg-netflix-card text-gray-300 border border-netflix-border rounded-full px-3 py-1">
+          Loading…
+        </span>
+        <!-- Dark / Light toggle -->
+        <button id="btn-theme" aria-label="Toggle theme"
+          class="w-8 h-8 rounded border border-netflix-border bg-netflix-card text-gray-300 hover:text-white hover:border-netflix-red transition-colors flex items-center justify-center text-sm">
+          ☀
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- ===== KEY INSIGHTS ===== -->
+    <section aria-label="Key Insights">
+      <h2 class="section-title">🔍 Key Insights</h2>
+      <div id="insights-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
+        <!-- Populated by script.js -->
+        <div class="insight-skeleton"></div>
+        <div class="insight-skeleton"></div>
+        <div class="insight-skeleton"></div>
+      </div>
+    </section>
+
+    <!-- ===== FILTERS ===== -->
+    <section aria-label="Filters" class="nf-card p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="section-title mb-0">Filters</h2>
+        <button id="btn-reset" class="text-xs text-netflix-red hover:underline font-medium transition-opacity hover:opacity-80">
+          ↺ Reset All
+        </button>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div class="flex flex-col gap-1">
+          <label for="f-type" class="filter-label">Type</label>
+          <select id="f-type" class="nf-select"><option value="all">All Types</option></select>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label for="f-country" class="filter-label">Country</label>
+          <select id="f-country" class="nf-select"><option value="all">All Countries</option></select>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label for="f-genre" class="filter-label">Genre</label>
+          <select id="f-genre" class="nf-select"><option value="all">All Genres</option></select>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label for="f-rating" class="filter-label">Rating</label>
+          <select id="f-rating" class="nf-select"><option value="all">All Ratings</option></select>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="filter-label">Release Year Range</label>
+          <div class="flex gap-2 items-center">
+            <input id="f-year-min" type="number" placeholder="From" min="1900" max="2025"
+              class="nf-select w-full text-center" />
+            <span class="text-netflix-muted text-xs">–</span>
+            <input id="f-year-max" type="number" placeholder="To" min="1900" max="2025"
+              class="nf-select w-full text-center" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== KPI CARDS ===== -->
+    <section aria-label="KPI Summary" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div class="kpi-card">
+        <p class="kpi-label">Total Titles</p>
+        <p id="kpi-total" class="kpi-value">—</p>
+        <p class="kpi-sub">in catalogue</p>
+      </div>
+      <div class="kpi-card border-t-netflix-red" style="border-top-color:#E50914">
+        <p class="kpi-label">Movies</p>
+        <p id="kpi-movies" class="kpi-value text-netflix-red">—</p>
+        <p class="kpi-sub" id="kpi-movies-pct">—</p>
+      </div>
+      <div class="kpi-card">
+        <p class="kpi-label">TV Shows</p>
+        <p id="kpi-tvshows" class="kpi-value text-blue-400">—</p>
+        <p class="kpi-sub" id="kpi-tvshows-pct">—</p>
+      </div>
+      <div class="kpi-card">
+        <p class="kpi-label">Countries</p>
+        <p id="kpi-countries" class="kpi-value text-emerald-400">—</p>
+        <p class="kpi-sub">unique origins</p>
+      </div>
+      <div class="kpi-card">
+        <p class="kpi-label">Avg Movie Duration</p>
+        <p id="kpi-avg-duration" class="kpi-value text-amber-400">—</p>
+        <p class="kpi-sub">minutes</p>
+      </div>
+    </section>
+
+    <!-- ===== CHARTS ROW 1: Type donut + Titles per Year ===== -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="nf-card p-5">
+        <h3 class="chart-title">Movie vs TV Show</h3>
+        <div class="chart-wrap chart-wrap--sm"><canvas id="chart-type"></canvas></div>
+      </div>
+      <div class="nf-card p-5 lg:col-span-2">
+        <h3 class="chart-title">Titles Added per Year</h3>
+        <div class="chart-wrap"><canvas id="chart-trend"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ===== CHARTS ROW 2: Top Countries + Top Genres ===== -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="nf-card p-5">
+        <h3 class="chart-title">Top 10 Countries by Titles</h3>
+        <div class="chart-wrap chart-wrap--lg"><canvas id="chart-countries"></canvas></div>
+      </div>
+      <div class="nf-card p-5">
+        <h3 class="chart-title">Top 10 Genres</h3>
+        <div class="chart-wrap chart-wrap--lg"><canvas id="chart-genres"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ===== CHARTS ROW 3: Rating dist + Release Year hist ===== -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="nf-card p-5">
+        <h3 class="chart-title">Rating Distribution</h3>
+        <div class="chart-wrap"><canvas id="chart-rating"></canvas></div>
+      </div>
+      <div class="nf-card p-5">
+        <h3 class="chart-title">Release Year Distribution</h3>
+        <div class="chart-wrap"><canvas id="chart-release-year"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ===== CHARTS ROW 4: Movie Duration + Top Directors + Top Actors ===== -->
+    <div class="nf-card p-5">
+      <h3 class="chart-title">Movie Duration Distribution (minutes)</h3>
+      <div class="chart-wrap"><canvas id="chart-duration"></canvas></div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="nf-card p-5">
+        <h3 class="chart-title">Top 10 Directors by Titles</h3>
+        <div class="chart-wrap chart-wrap--lg"><canvas id="chart-directors"></canvas></div>
+      </div>
+      <div class="nf-card p-5">
+        <h3 class="chart-title">Top 10 Actors by Appearances</h3>
+        <div class="chart-wrap chart-wrap--lg"><canvas id="chart-actors"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ===== TITLE TABLE ===== -->
+    <section aria-label="Title Browser" class="nf-card p-5">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+        <h3 class="chart-title mb-0">Title Browser</h3>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <input id="tbl-search" type="text" placeholder="🔍 Search by title…"
+            class="nf-select flex-1 sm:w-64 py-2" />
+          <span id="tbl-count" class="text-xs text-netflix-muted whitespace-nowrap">— titles</span>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-netflix-border text-netflix-muted text-left text-xs uppercase tracking-wider">
+              <th class="py-2 pr-4">Title</th>
+              <th class="py-2 pr-4">Type</th>
+              <th class="py-2 pr-4">Year</th>
+              <th class="py-2 pr-4">Rating</th>
+              <th class="py-2 pr-4">Duration</th>
+              <th class="py-2">Country</th>
+            </tr>
+          </thead>
+          <tbody id="tbl-body">
+            <!-- Populated by script.js -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="flex items-center justify-between mt-4 gap-2 flex-wrap">
+        <div class="text-xs text-netflix-muted">
+          Showing <span id="pg-from">—</span>–<span id="pg-to">—</span> of <span id="pg-total">—</span>
+        </div>
+        <div class="flex gap-2">
+          <button id="pg-prev" class="pg-btn" disabled>← Prev</button>
+          <span id="pg-info" class="text-xs text-gray-400 self-center px-2">Page 1</span>
+          <button id="pg-next" class="pg-btn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="mt-10 border-t border-netflix-border py-5 text-center text-xs text-netflix-muted">
+    Netflix Catalogue Analytics · IBM Capstone Project · Data: netflix_titles.csv
+  </footer>
+
+  <!-- Main script -->
+  <script src="script.js"></script>
+
+</body>
+</html>

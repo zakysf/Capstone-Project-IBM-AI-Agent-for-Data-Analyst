@@ -1,0 +1,181 @@
+/* =====================================================
+   style.css — Netflix Catalogue Analytics Dashboard
+   Custom styles supplementing Tailwind CSS
+   Dark-first theme: red (#E50914) · black (#141414)
+   ===================================================== */
+
+/* ── Base ── */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: #141414;
+  color: #e5e5e5;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light mode overrides */
+html:not(.dark) body { background-color: #f5f5f5; color: #141414; }
+html:not(.dark) .nf-card { background: #ffffff; border-color: #e0e0e0; }
+html:not(.dark) .nf-select { background: #f9f9f9; color: #141414; border-color: #d1d5db; }
+html:not(.dark) .chart-title { color: #1a1a1a; }
+html:not(.dark) .section-title { color: #1a1a1a; }
+html:not(.dark) .kpi-card { background: #ffffff; border-color: #e0e0e0; }
+html:not(.dark) .kpi-label { color: #6b7280; }
+html:not(.dark) .kpi-sub { color: #9ca3af; }
+html:not(.dark) header { background: #1a1a1a !important; }
+html:not(.dark) #btn-theme { background: #f3f4f6; color: #141414; border-color: #d1d5db; }
+html:not(.dark) tbody tr:hover { background: #f9fafb; }
+html:not(.dark) thead tr th { border-color: #e5e7eb; }
+html:not(.dark) .pg-btn { background: #f3f4f6; color: #374151; border-color: #d1d5db; }
+html:not(.dark) .pg-btn:hover:not(:disabled) { background: #E50914; color: white; border-color: #E50914; }
+html:not(.dark) .insight-card { background: #f0f4ff; border-color: #c7d2fe; }
+html:not(.dark) .insight-card p { color: #374151; }
+
+/* ── Netflix card ── */
+.nf-card {
+  background: #1f1f1f;
+  border: 1px solid #2a2a2a;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  transition: box-shadow 0.2s ease;
+}
+.nf-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.6); }
+
+/* ── Select / input ── */
+.nf-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+  width: 100%;
+  padding: 0.45rem 2rem 0.45rem 0.75rem;
+  font-size: 0.8125rem;
+  color: #e5e5e5;
+  background-color: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.nf-select:hover  { border-color: #E50914; }
+.nf-select:focus  { outline: none; border-color: #E50914; box-shadow: 0 0 0 2px rgba(229,9,20,0.25); }
+input.nf-select   { background-image: none; }
+
+/* ── Filter label ── */
+.filter-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #808080;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Section title ── */
+.section-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #808080;
+  margin-bottom: 0.5rem;
+}
+
+/* ── KPI card ── */
+.kpi-card {
+  background: #1f1f1f;
+  border: 1px solid #2a2a2a;
+  border-top-width: 3px;
+  border-top-color: #3a3a3a;
+  border-radius: 0.75rem;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.kpi-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.5); transform: translateY(-2px); }
+.kpi-label { font-size: 0.7rem; font-weight: 500; color: #808080; text-transform: uppercase; letter-spacing: 0.05em; }
+.kpi-value { font-size: 1.875rem; font-weight: 800; line-height: 1.1; }
+.kpi-sub   { font-size: 0.7rem; color: #555; }
+
+/* ── Chart title ── */
+.chart-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #e5e5e5;
+  margin-bottom: 1rem;
+  padding-bottom: 0.625rem;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+/* ── Chart wrappers ── */
+.chart-wrap       { position: relative; height: 280px; }
+.chart-wrap--sm   { height: 220px; }
+.chart-wrap--lg   { height: 340px; }
+
+/* ── Insight card ── */
+.insight-card {
+  background: rgba(229,9,20,0.07);
+  border: 1px solid rgba(229,9,20,0.25);
+  border-left: 3px solid #E50914;
+  border-radius: 0.625rem;
+  padding: 0.875rem 1rem;
+  transition: background 0.2s ease;
+}
+.insight-card:hover { background: rgba(229,9,20,0.12); }
+.insight-card .insight-num { font-size: 1.1rem; font-weight: 700; color: #E50914; }
+.insight-card p { font-size: 0.8125rem; color: #c0c0c0; line-height: 1.5; margin-top: 0.25rem; }
+
+/* Skeleton pulse for insights loading state */
+.insight-skeleton {
+  height: 80px;
+  background: #2a2a2a;
+  border-radius: 0.625rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity:1; }
+  50%      { opacity:0.4; }
+}
+
+/* ── Table ── */
+tbody tr {
+  border-bottom: 1px solid #2a2a2a;
+  transition: background 0.15s ease;
+}
+tbody tr:hover { background: rgba(255,255,255,0.04); }
+td { padding: 0.625rem 1rem 0.625rem 0; font-size: 0.8125rem; color: #c0c0c0; vertical-align: middle; }
+td:first-child { color: #e5e5e5; font-weight: 500; max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Type badges */
+.badge-movie   { display:inline-block; padding:1px 7px; border-radius:9999px; font-size:0.68rem; font-weight:600; background:rgba(229,9,20,0.15); color:#E50914; border:1px solid rgba(229,9,20,0.3); }
+.badge-tvshow  { display:inline-block; padding:1px 7px; border-radius:9999px; font-size:0.68rem; font-weight:600; background:rgba(96,165,250,0.15); color:#60a5fa; border:1px solid rgba(96,165,250,0.3); }
+
+/* ── Pagination ── */
+.pg-btn {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 0.4rem;
+  border: 1px solid #3a3a3a;
+  background: #2a2a2a;
+  color: #c0c0c0;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.pg-btn:hover:not(:disabled) { background: #E50914; color: #fff; border-color: #E50914; }
+.pg-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar       { width:5px; height:5px; }
+::-webkit-scrollbar-track { background: #1a1a1a; }
+::-webkit-scrollbar-thumb { background: #3a3a3a; border-radius:9999px; }
+::-webkit-scrollbar-thumb:hover { background: #E50914; }
+
+/* ── Responsive ── */
+@media (max-width: 400px) {
+  .kpi-value { font-size: 1.4rem; }
+  .chart-wrap { height: 220px; }
+  .chart-wrap--lg { height: 280px; }
+}
